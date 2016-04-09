@@ -1,0 +1,41 @@
+--create manager node
+docker-machine create -d virtualbox manager
+
+--create a child node
+docker-machine create -d virtualbox agent1
+
+--get env for a particular host
+eval $(docker-machine env manager)
+
+--create new swarm token
+docker run --rm swarm -experimental create
+docker run --rm swarm create
+
+--Swarm token
+cfb9bef50f84d5d5d9674de3a72ed2f2
+
+--Start swarm on manager
+docker run -d -p 3376:3376 -t -v /var/lib/boot2docker:/certs:ro swarm -experimental manage -H 0.0.0.0:3376 --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem -tlskey=/certs/server-key.pem token://cfb9bef50f84d5d5d9674de3a72ed2f2
+docker run -d -p 3376:3376 -t -v /var/lib/boot2docker:/certs:ro swarm manage -H 0.0.0.0:3376 --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem -tlskey=/certs/server-key.pem token://cfb9bef50f84d5d5d9674de3a72ed2f2
+
+--get env for next host
+eval $(docker-machine env agent1)
+
+--get IPs for the nodes
+docker-machine ls
+
+--join agent1 to swarm cluster, -experimental gives access to node failover
+docker run -d swarm -experimental join --addr=192.168.99.101:2376 token://cfb9bef50f84d5d5d9674de3a72ed2f2
+docker run -d swarm join --addr=192.168.99.102:2376 token://cfb9bef50f84d5d5d9674de3a72ed2f2
+
+--Set host to communicate with as manager
+DOCKER_HOST=$(docker-machine ip manager):3376
+
+--launch an infinite loop
+docker run -d --env="reschedule:on-node-failure" ubuntu /bin/sh -c "while true; do date;hostname;sleep 10; done"
+
+--To get a terminal in the host machine manager
+docker-machine ssh manager
+
+--list all containers
+docker-machine ls
