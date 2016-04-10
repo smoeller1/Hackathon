@@ -93,7 +93,7 @@ public class DockerVBox
 
     public static void main( String[] args ) {
         DockerVBox dvb = new DockerVBox();
-        Map<String, Boolean> states = dvb.getMachineState();
+        Map<String, Boolean> states = dvb.getMachineState(false);
         Iterator statesIter = states.entrySet().iterator();
         while (statesIter.hasNext()) {
             Map.Entry item = (Map.Entry) statesIter.next();
