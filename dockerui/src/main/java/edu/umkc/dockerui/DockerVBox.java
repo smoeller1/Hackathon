@@ -7,10 +7,7 @@ import org.virtualbox_4_1.*;
 import org.virtualbox_4_1.jaxws.MachineState;
 import org.virtualbox_4_1.jaxws.VboxPortType;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -56,15 +53,25 @@ public class DockerVBox
      *   True=running
      *   False=not running
      * This will also rebuild the machineMap each time it is ran
+     * If the optional boolean parameter is passed, set to true
+     * to report all nodes; set to false to only report Running nodes
      */
     public Map<String, Boolean> getMachineState() {
+        return getMachineState(true);
+    }
+    public Map<String, Boolean> getMachineState(Boolean method) {
         List<IMachine> machines = vbox.getMachines();
         updateMachineMap(machines);
         Map<String, Boolean> upStates = new HashMap<String, Boolean>();
         Iterator mit = machines.iterator();
         while (mit.hasNext()) {
             IMachine machine = (IMachine) mit.next();
-            upStates.put(machine.getId(), machine.getState().equals(org.virtualbox_4_1.MachineState.Running));
+            Boolean machineRunning = machine.getState().equals(org.virtualbox_4_1.MachineState.Running);
+            if (method) {
+                upStates.put(machine.getName(), machineRunning);
+            } else if(machineRunning) {
+                upStates.put(machine.getName(), machineRunning);
+            }
         }
         return upStates;
     }
@@ -80,29 +87,7 @@ public class DockerVBox
         Iterator mit = inputMachineList.iterator();
         while (mit.hasNext()) {
             IMachine machine = (IMachine) mit.next();
-            machineMap.put(machine.getId(), machine);
-        }
-    }
-
-    //Get loading/health information for all machines that are active
-    public void getMachineLoads() {
-        Map<String, Boolean> machines = getMachineState();
-        Map<String, String> loads = new HashMap<String, String>();
-        Iterator machineIter = machines.entrySet().iterator();
-        while (machineIter.hasNext()) {
-            Map.Entry machine = (Map.Entry) machineIter.next();
-
-            //Only query those machines that are actually running
-            if ((Boolean) machine.getValue()) {
-                IMachine thisMachine = machineMap.get(machine.getKey());
-                IPerformanceCollector ipc = IPerformanceCollector.queryInterface(thisMachine);
-                System.out.println("Metrics for " + machine.getKey() + ": " + ipc.toString());
-                List<String> ipcNames = ipc.getMetricNames();
-                Iterator ipcNameIter = ipcNames.iterator();
-                while (ipcNameIter.hasNext()) {
-                    System.out.println("IPC metric name: " + ipcNameIter.next().toString());
-                }
-            }
+            machineMap.put(machine.getName(), machine);
         }
     }
 
@@ -112,9 +97,8 @@ public class DockerVBox
         Iterator statesIter = states.entrySet().iterator();
         while (statesIter.hasNext()) {
             Map.Entry item = (Map.Entry) statesIter.next();
-            System.out.println(item.getKey().toString() + " state: " + item.getValue().toString());
+            System.out.println("Node " + item.getKey().toString() + " is in state " + item.getValue().toString());
         }
-        dvb.getMachineLoads();
         dvb.close();
     }
 }

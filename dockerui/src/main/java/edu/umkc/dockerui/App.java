@@ -22,14 +22,18 @@ public class App
 {
     private static final String containerImage = "busybox";
 
-      public static void main( String[] args ) throws DockerCertificateException {
+      public static void main( String[] args ) throws DockerCertificateException, DockerException, InterruptedException {
         DockerCertificates dockerCertificates = new DockerCertificates(Paths.get("C:\\Users\\smoeller\\.docker\\machine\\machines\\agent1"));
         DockerClient docker = DefaultDockerClient.builder()
                 .uri("https://192.168.99.101:2376")
                 .dockerCertificates(dockerCertificates)
                 .build();
         System.out.println("Docker: " + docker.toString());
-        try {
+          ContainerStats stats = docker.stats("d2330430d979");
+          Double cpuFree = (stats.cpuStats().systemCpuUsage().doubleValue() / 1000000) / 1000000;
+          Long memoryKbUsed = stats.memoryStats().maxUsage() / 1024;
+          System.out.println("individual: " + cpuFree + "% free :: " + memoryKbUsed + "KB used");
+        /*try {
             System.out.println("Pulling " + containerImage);
             docker.pull(containerImage);
             System.out.println("Finished pulling " + containerImage);
@@ -37,8 +41,8 @@ public class App
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        try {
+        } */
+       /* try {
             Info info = docker.info();
             System.out.println(info.toString());
         } catch (DockerException e) {
@@ -70,11 +74,14 @@ public class App
             ContainerInfo info = docker.inspectContainer(id);
             docker.startContainer(id);
             System.out.println("Container ID: " + id);
+            stats = docker.stats(id);
+            System.out.println("Container stats: " + stats.toString());
         } catch (DockerException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        } */
+
         docker.close();
     }
 }
