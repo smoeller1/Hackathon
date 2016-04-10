@@ -1,5 +1,17 @@
 package edu.umkc.dockerui;
 
+/*
+ * Simplified API to get lists of VirtualBox hosts
+ * Before this will work, the VirtualBox webservice will need to be started
+ * on the virtualbox host:
+ *
+ * //Disable authentication:
+ * VBoxManage.exe setproperty websrvauthlibrary null
+ *
+ * //Start the webservice:
+ * VBoxWebSrv.exe
+ */
+
 
 import com.sun.org.apache.xerces.internal.impl.dv.xs.BooleanDV;
 import com.sun.org.apache.xpath.internal.operations.Bool;
