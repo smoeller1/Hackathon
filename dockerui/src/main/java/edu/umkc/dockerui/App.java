@@ -20,36 +20,9 @@ import java.util.Map;
  */
 public class App
 {
-    //private static final String containerImage = "busybox";
+    private static final String containerImage = "busybox";
 
-    public static void main( String[] args ) {
-        System.out.println("Hello universe!");
-
-        VirtualBoxManager mgr = VirtualBoxManager.createInstance(null);
-        boolean ws = true; // or true, if we need the SOAP version
-        if (ws) {
-            String url = "http://localhost:18083";
-            String user = "test";
-            String passwd = "test";
-            mgr.connect(url, user, passwd);
-        }
-        System.out.println("VirtualBoxManager: " + mgr.toString());
-        IVirtualBox vbox = mgr.getVBox();
-        try {
-            System.out.println("IVirtualBox: " + mgr.getVBox().toString());
-            System.out.println("VirtualBox version: " + vbox.getVersion() + "\n");
-        } catch (NullPointerException npe) {
-            npe.printStackTrace();
-        }
-// get first VM name
-        String m = vbox.getMachines().get(0).getName();
-        System.out.println("\nAttempting to start VM '" + m + "'");
-// start it
-        mgr.startVm(m, null, 7000);
-        if (ws)
-            mgr.disconnect();
-        mgr.cleanup();
-     /* public static void main( String[] args ) throws DockerCertificateException {
+      public static void main( String[] args ) throws DockerCertificateException {
         DockerCertificates dockerCertificates = new DockerCertificates(Paths.get("C:\\Users\\smoeller\\.docker\\machine\\machines\\agent1"));
         DockerClient docker = DefaultDockerClient.builder()
                 .uri("https://192.168.99.101:2376")
@@ -102,6 +75,6 @@ public class App
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        docker.close(); */
+        docker.close();
     }
 }

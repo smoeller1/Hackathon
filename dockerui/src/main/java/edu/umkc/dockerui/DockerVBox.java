@@ -97,6 +97,11 @@ public class DockerVBox
                 IMachine thisMachine = machineMap.get(machine.getKey());
                 IPerformanceCollector ipc = IPerformanceCollector.queryInterface(thisMachine);
                 System.out.println("Metrics for " + machine.getKey() + ": " + ipc.toString());
+                List<String> ipcNames = ipc.getMetricNames();
+                Iterator ipcNameIter = ipcNames.iterator();
+                while (ipcNameIter.hasNext()) {
+                    System.out.println("IPC metric name: " + ipcNameIter.next().toString());
+                }
             }
         }
     }
