@@ -97,7 +97,7 @@ public class DockerVBox
         Iterator statesIter = states.entrySet().iterator();
         while (statesIter.hasNext()) {
             Map.Entry item = (Map.Entry) statesIter.next();
-            System.out.println("Node " + item.getKey().toString() + " is in state " + item.getValue().toString());
+            System.out.println("Node " + item.getKey().toString() + " is in state " + ((Boolean) item.getValue() ? "Running" : "Not Running"));
         }
         dvb.close();
     }
