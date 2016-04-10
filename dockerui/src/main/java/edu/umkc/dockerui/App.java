@@ -18,7 +18,7 @@ import java.util.Map;
  * Hello world!
  *
  */
-public class App 
+public class App
 {
     //private static final String containerImage = "busybox";
 
